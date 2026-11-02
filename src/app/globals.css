@@ -128,3 +128,50 @@
     @apply font-sans;
   }
 }
+/* ===== DRUIDS LOUNGE BRAND THEME ===== */
+
+@theme inline {
+  --font-sans: var(--font-body);
+  --font-serif: var(--font-display);
+  --color-gold: #D6B779;
+  --color-surface: #251A37;
+}
+
+:root {
+  --radius: 0.875rem;
+}
+
+/* The app is dark-only: <html> carries the "dark" class (see layout.tsx) */
+.dark {
+  --background: #100D19;
+  --foreground: #FFFFFF;
+  --card: #251A37;
+  --card-foreground: #FFFFFF;
+  --popover: #251A37;
+  --popover-foreground: #FFFFFF;
+  --primary: #A855F7;
+  --primary-foreground: #FFFFFF;
+  --secondary: #251A37;
+  --secondary-foreground: #FFFFFF;
+  --muted: #251A37;
+  --muted-foreground: #B8B2C5;
+  --accent: #2F2245;
+  --accent-foreground: #FFFFFF;
+  --destructive: #F87171;
+  --border: rgb(255 255 255 / 0.1);
+  --input: rgb(255 255 255 / 0.12);
+  --ring: #A855F7;
+}
+
+/* Smooth entrance animation, usable as className="animate-fade-up" */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-up {
+  animation: fade-up 0.6s ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-up { animation: none; }
+}

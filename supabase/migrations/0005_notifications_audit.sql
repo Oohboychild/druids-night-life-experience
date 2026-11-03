@@ -1,6 +1,7 @@
 -- =====================================================================
 -- Migration 0005: notifications (trigger-driven) and audit logs
 -- Runs inside one transaction: if anything fails, nothing is applied.
+-- Requires migrations 0001 to 0004 (needs public.song_requests).
 -- =====================================================================
 begin;
 

@@ -2,8 +2,18 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import type { Database } from "@/types/database";
 
-// Refreshes the Supabase auth session on every matched request and
-// keeps the browser and server cookies in sync.
+const PROTECTED_PREFIXES = ["/admin", "/dj", "/waiter"];
+
+function isProtectedPath(path: string) {
+  return (
+    path === "/staff" ||
+    PROTECTED_PREFIXES.some((p) => path === p || path.startsWith(`${p}/`))
+  );
+}
+
+// Refreshes the Supabase auth session on every matched request, keeps the
+// cookies in sync, and sends signed-out or anonymous visitors away from
+// staff areas. (Role checks happen in server components; this is a first gate.)
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
 
@@ -28,9 +38,22 @@ export async function updateSession(request: NextRequest) {
     }
   );
 
-  // IMPORTANT: do not add code between createServerClient and getUser().
-  // getUser() contacts Supabase to validate the session, so it is safe to trust.
-  await supabase.auth.getUser();
+  // IMPORTANT: no code between createServerClient and getUser().
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (isProtectedPath(request.nextUrl.pathname) && (!user || user.is_anonymous)) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/staff/login";
+    url.search = "";
+    const redirectResponse = NextResponse.redirect(url);
+    // Keep any refreshed auth cookies on the redirect
+    supabaseResponse.cookies.getAll().forEach((cookie) => {
+      redirectResponse.cookies.set(cookie);
+    });
+    return redirectResponse;
+  }
 
   return supabaseResponse;
 }
